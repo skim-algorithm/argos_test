@@ -1,0 +1,22 @@
+# python-binance 라이브러리 사용을 위한 모듈 설치
+autobahn
+certifi
+cryptography
+dateparser
+
+# GCP 사용을 위한 모듈 설치
+google-api-python-client
+matplotlib
+
+numpy==1.22.*
+pandas==1.3.*
+psycopg2-binary
+pyarrow
+pyOpenSSL
+redis
+requests
+service-identity
+sklearn
+statsmodels
+Twisted
+xlsxwriter

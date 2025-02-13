@@ -1,0 +1,576 @@
+version: '3'
+services:
+  junggil_003:
+    image: arques/argos:latest
+    container_name: "argos-junggil_003"
+    environment:
+      - strategy=junggil_003
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9001:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"      
+
+  band_003_eth:
+    image: arques/argos:latest
+    container_name: "argos-band_003_eth"
+    environment:
+      - strategy=band_003_eth
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9002:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  band_003:
+    image: arques/argos:latest
+    container_name: "argos-band_003"
+    environment:
+      - strategy=band_003
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9003:9000
+    command: python /app/app.py
+    logging:
+        driver: "gcplogs"
+
+
+  junggil_003_vip:
+    image: arques/argos:latest
+    container_name: "argos-junggil_003_vip"
+    environment:
+      - strategy=junggil_003_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9004:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  band_003_vip:
+    image: arques/argos:latest
+    container_name: "argos-band_003_vip"
+    environment:
+      - strategy=band_003_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9005:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  band_003_eth_vip:
+    image: arques/argos:latest
+    container_name: "argos-band_003_eth_vip"
+    environment:
+      - strategy=band_003_eth_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9006:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  junggil_004:
+    image: arques/argos:latest
+    container_name: "argos-junggil_004"
+    environment:
+      - strategy=junggil_004
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9007:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_001:
+    image: arques/argos:latest
+    container_name: "argos-skim_001"
+    environment:
+      - strategy=skim_001
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9008:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test:
+    image: arques/argos:latest
+    container_name: "argos-test"
+    environment:
+      - strategy=test
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9009:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_001_vip:
+    image: arques/argos:latest
+    container_name: "argos-skim_001_vip"
+    environment:
+      - strategy=skim_001_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9010:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  junggil_004_vip:
+    image: arques/argos:latest
+    container_name: "argos-junggil_004_vip"
+    environment:
+      - strategy=junggil_004_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9011:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_001:
+    image: arques/argos:latest
+    container_name: "argos-test_001"
+    environment:
+      - strategy=test_001
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9012:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_002:
+    image: arques/argos:latest
+    container_name: "argos-test_002"
+    environment:
+      - strategy=test_002
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9013:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_002:
+    image: arques/argos:latest
+    container_name: "argos-skim_002"
+    environment:
+      - strategy=skim_002
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9014:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  junggil_005:
+    image: arques/argos:latest
+    container_name: "argos-junggil_005"
+    environment:
+      - strategy=junggil_005
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9015:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_003:
+    image: arques/argos:latest
+    container_name: "argos-test_003"
+    environment:
+      - strategy=test_003
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9016:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_004:
+    image: arques/argos:latest
+    container_name: "argos-test_004"
+    environment:
+      - strategy=test_004
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9017:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_001:
+    image: arques/argos:latest
+    container_name: "argos-harin_001"
+    environment:
+      - strategy=harin_001
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9018:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  indicator_test:
+    image: arques/argos:latest
+    container_name: "argos-indicator_test"
+    environment:
+      - strategy=indicator_test
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9019:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_insu_001:
+    image: arques/argos:latest
+    container_name: "argos-test_insu_001"
+    environment:
+      - strategy=test_insu_001
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9020:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  test_insu_002:
+    image: arques/argos:latest
+    container_name: "argos-test_insu_002"
+    environment:
+      - strategy=test_insu_002
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9021:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_004:
+    image: arques/argos:latest
+    container_name: "argos-skim_004"
+    environment:
+      - strategy=skim_004
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9022:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  junggil_006:
+    image: arques/argos:latest
+    container_name: "argos-junggil_006"
+    environment:
+      - strategy=junggil_006
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9023:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_003:
+    image: arques/argos:latest
+    container_name: "argos-skim_003"
+    environment:
+      - strategy=skim_003
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9024:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_002:
+    image: arques/argos:latest
+    container_name: "argos-harin_002"
+    environment:
+      - strategy=harin_002
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9025:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_test01:
+    image: arques/argos:latest
+    container_name: "argos-skim_test01"
+    environment:
+      - strategy=skim_test01
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9026:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_003:
+    image: arques/argos:latest
+    container_name: "argos-harin_003"
+    environment:
+      - strategy=harin_003
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9027:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_006:
+    image: arques/argos:latest
+    container_name: "argos-skim_006"
+    environment:
+      - strategy=skim_006
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9028:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_007_vip:
+    image: arques/argos:latest
+    container_name: "argos-skim_007_vip"
+    environment:
+      - strategy=skim_007_vip
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9029:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_002_v2:
+    image: arques/argos:latest
+    container_name: "argos-harin_002_v2"
+    environment:
+      - strategy=harin_002_v2
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9030:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_003_v2:
+    image: arques/argos:latest
+    container_name: "argos-harin_003_v2"
+    environment:
+      - strategy=harin_003_v2
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9031:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  maxqty_test:
+    image: arques/argos:latest
+    container_name: "argos-maxqty_test"
+    environment:
+      - strategy=maxqty_test
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9032:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  skim_005:
+    image: arques/argos:latest
+    container_name: "argos-skim_005"
+    environment:
+      - strategy=skim_005
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9033:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_003_v3:
+    image: arques/argos:latest
+    container_name: "argos-harin_003_v3"
+    environment:
+      - strategy=harin_003_v3
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9034:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_002_03:
+    image: arques/argos:latest
+    container_name: "argos-harin_002_03"
+    environment:
+      - strategy=harin_002_03
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9035:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
+
+  harin_002_v3:
+    image: arques/argos:latest
+    container_name: "argos-harin_002_v3"
+    environment:
+      - strategy=harin_002_v3
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9036:9000
+    command: python /app/app.py
+    logging:
+      driver: "gcplogs"
+
