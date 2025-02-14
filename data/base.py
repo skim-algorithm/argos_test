@@ -127,20 +127,25 @@ class Base(ABC):
 
         # Fetch funding rates
         try:
-            funding_rate = self.ccxt_client.fetch_funding_rate(ccxt_symbol)
+            funding_rate_history = self.ccxt_client.fetch_funding_rate_history(
+                ccxt_symbol,
+                since=start,
+                params={"endTime": end})
+
+            if not funding_rate_history:
+                raise ValueError(f"No funding rate history found for {symbol}")
             # Create a DataFrame and format the data
             data = {
-                "symbol": [funding_rate["symbol"]],
-                "funding_rate": [funding_rate["fundingRate"]],
-                "datetime": [pd.to_datetime(funding_rate["timestamp"], unit="ms", utc=True)],
+                "symbol": [rate["symbol"] for rate in funding_rate_history],
+                "funding_rate": [rate["fundingRate"] for rate in funding_rate_history],
+                "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
             }
             df = pd.DataFrame(data)
             df.set_index("datetime", inplace=True)
+            self.logging.info(f"({symbol}) funding rate history loaded from {start} to {end}")
 
-            self.logging.info(f"({symbol}) funding rate loaded: {funding_rate['fundingRate']} at {df.index[0]}")
-
-        except (ccxt.NetworkError, ccxt.ExchangeError) as e:
-            self.logging.error(f"Failed to fetch funding rate for {symbol}: {str(e)}")
+        except (ccxt.NetworkError, ccxt.ExchangeError, ValueError) as e:
+            self.logging.error(f"Failed to fetch funding rate history for {symbol}: {str(e)}")
 
             # Create a fallback DataFrame with funding rate = 0
             df = pd.DataFrame(
@@ -188,7 +193,8 @@ class Base(ABC):
     def __load_from_api_server(self, symbol, start, end):
         ccxt_symbol = self.__get_symbol(symbol)
         ms = 1000
-        onemin: int = 60 * ms
+        one_minutes: int = 60 * ms
+
         # CCXT 클라이언트 초기화
         if not hasattr(self, 'ccxt_client'):
             self.ccxt_client = ccxt.binance({
@@ -258,7 +264,7 @@ class Base(ABC):
                 data = chunk
             else:
                 data = pd.concat([data, chunk], ignore_index=True, copy=False)
-            start_timestamp = ohlcv[-1][0] + onemin  # 1분(60초) 단위 증가
+            start_timestamp = ohlcv[-1][0] + one_minutes  # 1분(60초) 단위 증가
 
         data.to_csv(self.__get_cache_dir(symbol, start, end), header=True, index=False)
         return data
