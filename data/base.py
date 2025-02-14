@@ -123,25 +123,35 @@ class Base(ABC):
         if ccxt_symbol not in markets:
             raise ValueError(f"Unsupported symbol: {ccxt_symbol}")
 
+    
         # Fetch funding rates
-        funding_rate_history = self.ccxt_client.fetch_funding_rate_history(
-            ccxt_symbol,
-            since=start,
-            limit=300,
-            params={"endTime": end})
-
-        if not funding_rate_history:
-            raise ValueError(f"No funding rate history found for {symbol}")
-        # Create a DataFrame and format the data
-        data = {
-            "symbol": [rate["symbol"] for rate in funding_rate_history],
-            "funding_rate": [rate["fundingRate"] for rate in funding_rate_history],
-            "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
-        }
-        df = pd.DataFrame(data)
-        df.set_index("datetime", inplace=True)
+        start_time = start
+        end_time = end
+        ms = 1000
+        one_minutes: int = 60 * ms
+        limit = 300
+        results = pd.DataFrame(columns=["symbol", "funding_rate", "datetime"])
+        while start_time < end_time:
+            funding_rate_history = self.ccxt_client.fetch_funding_rate_history(
+                ccxt_symbol,
+                since=start_time,
+                limit=limit,
+                params={"endTime": end_time}
+            )
+            if not funding_rate_history:
+                break
+            data = {
+                "symbol": [rate["symbol"] for rate in funding_rate_history],
+                "funding_rate": [rate["fundingRate"] for rate in funding_rate_history],
+                "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
+            }
+            df = pd.DataFrame(data)
+            results = pd.concat([results, df], ignore_index=True)
+            start_time = funding_rate_history[-1]["timestamp"] + one_minutes  # Increment start time to avoid duplicates
+        
+        results.set_index("datetime", inplace=True)
         self.logging.info(f"({symbol}) funding rate history loaded from {start} to {end}")
-        return df
+        return results
 
     def __get_json(self, file_name):
         filePath = f"{os.path.dirname(os.path.realpath(__file__))}/../{file_name}.json"
