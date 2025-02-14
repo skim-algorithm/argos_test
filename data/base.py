@@ -109,8 +109,6 @@ class Base(ABC):
         return data
 
     def _get_funding_rate(self, symbol, start, end):
-        import ccxt
-
         # CCXT client initialization
         if not hasattr(self, 'ccxt_client'):
             self.ccxt_client = ccxt.binance(
@@ -126,37 +124,23 @@ class Base(ABC):
             raise ValueError(f"Unsupported symbol: {ccxt_symbol}")
 
         # Fetch funding rates
-        try:
-            funding_rate_history = self.ccxt_client.fetch_funding_rate_history(
-                ccxt_symbol,
-                since=start,
-                params={"endTime": end})
+        funding_rate_history = self.ccxt_client.fetch_funding_rate_history(
+            ccxt_symbol,
+            since=start,
+            limit=300,
+            params={"endTime": end})
 
-            if not funding_rate_history:
-                raise ValueError(f"No funding rate history found for {symbol}")
-            # Create a DataFrame and format the data
-            data = {
-                "symbol": [rate["symbol"] for rate in funding_rate_history],
-                "funding_rate": [rate["fundingRate"] for rate in funding_rate_history],
-                "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
-            }
-            df = pd.DataFrame(data)
-            df.set_index("datetime", inplace=True)
-            self.logging.info(f"({symbol}) funding rate history loaded from {start} to {end}")
-
-        except (ccxt.NetworkError, ccxt.ExchangeError, ValueError) as e:
-            self.logging.error(f"Failed to fetch funding rate history for {symbol}: {str(e)}")
-
-            # Create a fallback DataFrame with funding rate = 0
-            df = pd.DataFrame(
-                {
-                    "symbol": [symbol],
-                    "funding_rate": [0],
-                    "datetime": [pd.to_datetime(start, unit="ms", utc=True)],
-                }
-            )
-            df.set_index("datetime", inplace=True)
-
+        if not funding_rate_history:
+            raise ValueError(f"No funding rate history found for {symbol}")
+        # Create a DataFrame and format the data
+        data = {
+            "symbol": [rate["symbol"] for rate in funding_rate_history],
+            "funding_rate": [rate["fundingRate"] for rate in funding_rate_history],
+            "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
+        }
+        df = pd.DataFrame(data)
+        df.set_index("datetime", inplace=True)
+        self.logging.info(f"({symbol}) funding rate history loaded from {start} to {end}")
         return df
 
     def __get_json(self, file_name):
@@ -194,6 +178,7 @@ class Base(ABC):
         ccxt_symbol = self.__get_symbol(symbol)
         ms = 1000
         one_minutes: int = 60 * ms
+        limit = 1000
 
         # CCXT 클라이언트 초기화
         if not hasattr(self, 'ccxt_client'):
@@ -227,7 +212,6 @@ class Base(ABC):
         interval_map = { "1m": "1m", "3m": "3m", "5m": "5m", "15m": "15m", "1h": "1h", "1d": "1d", "1w": "1w", "1M": "1M" }
         if self.args.interval not in interval_map:
             raise ValueError(f"Unsupported interval: {self.args.interval}")
-
         ccxt_interval = interval_map[self.args.interval]
 
         # 시간 범위 유효성 검사
@@ -241,8 +225,7 @@ class Base(ABC):
 			dtype="object"
 		)
         # OHLCV 데이터 로드
-        limit = 1000
-        while start_timestamp < end_timestamp:
+        while start_timestamp <= end_timestamp:
             try:
                 ohlcv = (self.ccxt_client.fetch_ohlcv
                          (ccxt_symbol,
@@ -265,6 +248,10 @@ class Base(ABC):
             else:
                 data = pd.concat([data, chunk], ignore_index=True, copy=False)
             start_timestamp = ohlcv[-1][0] + one_minutes  # 1분(60초) 단위 증가
+
+            readable_start_time = datetime.datetime.fromtimestamp(start_timestamp / 1000).strftime("%Y-%m-%d %H:%M:%S")
+            readable_end_time = datetime.datetime.fromtimestamp(end_timestamp / 1000).strftime("%Y-%m-%d %H:%M:%S")
+            print(f"({symbol}) {ccxt_symbol} OHLCV data loaded from {readable_start_time} to {readable_end_time}")
 
         data.to_csv(self.__get_cache_dir(symbol, start, end), header=True, index=False)
         return data

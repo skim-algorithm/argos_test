@@ -36,7 +36,6 @@ class BacktestData(base.Base):
     def __get_next(self):
         next_datas = []
         for data in self.datas.values():
-
             if data.use_count >= min(data.entire_length, len(data.df) - self.data_length):
                 continue
 

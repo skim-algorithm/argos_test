@@ -235,6 +235,8 @@ class BacktestOrder(base.Base):
             self.pos[order.symbol] = None
         else:
             pos.quantity -= order.quantity
+            if pos.quantity < 0.00000001:
+                pos.quantity = 0.0
             pos.cost -= order.cost
 
         # close할 포지션의 정보 기록
