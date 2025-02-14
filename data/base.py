@@ -4,6 +4,7 @@ import os
 from collections import defaultdict
 import requests
 
+import ccxt
 import pandas as pd
 from abc import ABC, abstractmethod
 
@@ -185,13 +186,16 @@ class Base(ABC):
         return symbol
 
     def __load_from_api_server(self, symbol, start, end):
-        import ccxt
-        import pandas as pd
         ccxt_symbol = self.__get_symbol(symbol)
-
+        ms = 1000
+        onemin: int = 60 * ms
         # CCXT 클라이언트 초기화
         if not hasattr(self, 'ccxt_client'):
-            self.ccxt_client = ccxt.binance({'rateLimit': 1200, 'enableRateLimit': True})
+            self.ccxt_client = ccxt.binance({
+                'rateLimit': 1200,
+                'enableRateLimit': True,
+                'options': {'defaultType': 'future'}
+            })
 
         # 심볼 유효성 확인
         markets = self.ccxt_client.load_markets()
@@ -200,62 +204,49 @@ class Base(ABC):
 
         # 시간 변환 (UTC 기준 및 초 단위)
         if isinstance(start, datetime.datetime):
-            start_timestamp = int(start.timestamp() * 1000)  # 밀리초 단위로 변환
+            start_timestamp = int(start.timestamp() * ms)  # 밀리초 단위로 변환
         else:
             start_timestamp = int(
-                ArquesDateTime.convert_datetime_from_string(start, format="%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000
+                ArquesDateTime.convert_datetime_from_string(start, format="%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * ms
             )
 
         if isinstance(end, datetime.datetime):
-            end_timestamp = int(end.timestamp() * 1000)
+            end_timestamp = int(end.timestamp() * ms)
         else:
             end_timestamp = int(
-                ArquesDateTime.convert_datetime_from_string(end, format="%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000
+                ArquesDateTime.convert_datetime_from_string(end, format="%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * ms
             )
 
         # Interval 유효성 확인
-        interval_map = {
-            "1m": "1m",
-            "3m": "3m",
-            "5m": "5m",
-            "15m": "15m",
-            "30m": "30m",
-            "1h": "1h",
-            "2h": "2h",
-            "4h": "4h",
-            "6h": "6h",
-            "8h": "8h",
-            "12h": "12h",
-            "1d": "1d",
-            "3d": "3d",
-            "1w": "1w",
-            "1M": "1M",
-        }
-
+        interval_map = { "1m": "1m", "3m": "3m", "5m": "5m", "15m": "15m", "1h": "1h", "1d": "1d", "1w": "1w", "1M": "1M" }
         if self.args.interval not in interval_map:
             raise ValueError(f"Unsupported interval: {self.args.interval}")
 
         ccxt_interval = interval_map[self.args.interval]
 
         # 시간 범위 유효성 검사
-        now_timestamp = int(datetime.datetime.utcnow().timestamp() * 1000)
+        now_timestamp = int(datetime.datetime.utcnow().timestamp() * ms)
         if start_timestamp < 0 or start_timestamp > now_timestamp:
             raise ValueError(f"Invalid start time: {start_timestamp}")
 
         # 데이터프레임 초기화
-        data = pd.DataFrame(columns=["timestamp", "datetime", "open", "high", "low", "close", "volume"], dtype="object")
-
+        data = pd.DataFrame(
+			columns=["timestamp", "datetime", "open", "high", "low", "close", "volume"], 
+			dtype="object"
+		)
         # OHLCV 데이터 로드
         limit = 1000
         while start_timestamp < end_timestamp:
             try:
-                ohlcv = self.ccxt_client.fetch_ohlcv(ccxt_symbol, timeframe=ccxt_interval, since=start_timestamp,
-                                                     limit=limit)
-            except ccxt.NetworkError as e:
-                raise RuntimeError(f"Network error: {str(e)}")
-            except ccxt.ExchangeError as e:
-                raise RuntimeError(f"Exchange error: {str(e)}")
-
+                ohlcv = (self.ccxt_client.fetch_ohlcv
+                         (ccxt_symbol,
+                          timeframe=ccxt_interval,
+                          since=start_timestamp,
+                          limit=limit))
+            except ccxt.NetworkError as err:
+                raise RuntimeError(f"Network error: {str(err)}")
+            except ccxt.ExchangeError as err:
+                raise RuntimeError(f"Exchange error: {str(err)}")
             if not ohlcv:
                 break
 
@@ -267,8 +258,7 @@ class Base(ABC):
                 data = chunk
             else:
                 data = pd.concat([data, chunk], ignore_index=True, copy=False)
-
-            start_timestamp = int(chunk.iloc[-1]["timestamp"]) + 1
+            start_timestamp = ohlcv[-1][0] + onemin  # 1분(60초) 단위 증가
 
         data.to_csv(self.__get_cache_dir(symbol, start, end), header=True, index=False)
         return data
@@ -279,11 +269,11 @@ class Base(ABC):
         interval = interval.replace("h", "H")
         interval = interval.replace("d", "D")
         df = df.resample(interval).asfreq()
-        df["volume"].fillna(0, inplace=True)
-        df["close"].fillna(method="ffill", inplace=True)
-        df["open"].fillna(df["close"], inplace=True)
-        df["high"].fillna(df["close"], inplace=True)
-        df["low"].fillna(df["close"], inplace=True)
+        df["volume"] = df["volume"].fillna(0)
+        df["close"] = df["close"].ffill()
+        df["open"] = df["open"].fillna(df["close"])
+        df["high"] = df["high"].fillna(df["close"])
+        df["low"] = df["low"].fillna(df["close"])
         return df
 
     def get_variable(self, symbol, key):

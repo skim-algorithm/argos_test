@@ -52,11 +52,9 @@ class Detail(base.Base):
         self.max_drawdown_values = []
 
     def on_data(self, df):
-        import pandas as pd
-
         ohlcv = df.iloc[-1]
-        #self.data = self.data.append(ohlcv)
-        self.data = pd.concat([self.data, ohlcv], ignore_index=True)
+        self.data = self.data.append(ohlcv)
+
         close_price = ohlcv["close"]
 
         # 기본 정보

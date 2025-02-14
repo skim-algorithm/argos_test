@@ -97,10 +97,10 @@ class BacktestMode(mode.Base):
                 symbols_str += "-"
             symbols_str += symbol
 
-            #if self.args.backtest.use_analyze_per_dataframe:
-            #    detail_data = self.__update_and_get_entire_df(symbol)
-            #    # logging.info(detail_data)
-            #    detail_datas[symbol] = detail_data
+            if self.args.backtest.use_analyze_per_dataframe:
+                detail_data = self.__update_and_get_entire_df(symbol)
+                # logging.info(detail_data)
+                detail_datas[symbol] = detail_data
 
         # TODO: Create detail_ALL sheet in backtest result
         # if self.args.backtest.use_analyze_per_dataframe:
@@ -348,10 +348,16 @@ class BacktestMode(mode.Base):
         if data.empty is True:
             return
 
+        # 결과 보여줄 때 불필요한 컬럼 제거
+        data.drop(columns="timestamp", inplace=True)
+        data.drop(columns="open", inplace=True)
+        data.drop(columns="high", inplace=True)
+        data.drop(columns="low", inplace=True)
+        data.drop(columns="volume", inplace=True)
+
         # DatetimeIndex를 String 포멧으로 변경 (타임존 정보는 엑셀에 들어갈 수 없음)
         # data['datetime'] = data.index.strftime('%Y-%m-%d %H:%M:%S')
-        data.index = pd.to_datetime(data.index)  # 인덱스를 datetime으로 변환
-        data["datetime"] = data.index.strftime("%Y-%m-%d")  # 정상 작동
+        data["datetime"] = data.index.strftime("%Y-%m-%d")
 
         data.reset_index(drop=True, inplace=True)
         data.set_index("datetime", drop=True, inplace=True)
@@ -420,6 +426,14 @@ class BacktestMode(mode.Base):
 
             if data.empty is True:
                 return
+
+            # 결과 보여줄 때 불필요한 컬럼 제거
+            data.drop(columns="timestamp", inplace=True)
+            data.drop(columns="open", inplace=True)
+            data.drop(columns="high", inplace=True)
+            data.drop(columns="low", inplace=True)
+            data.drop(columns="volume", inplace=True)
+            data.drop(columns="close", inplace=True)
 
             # DatetimeIndex를 String 포멧으로 변경 (타임존 정보는 엑셀에 들어갈 수 없음)
             # data['datetime'] = data.index.strftime('%Y-%m-%d %H:%M:%S')
