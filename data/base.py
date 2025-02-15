@@ -146,7 +146,10 @@ class Base(ABC):
                 "datetime": [pd.to_datetime(rate["timestamp"], unit="ms", utc=True) for rate in funding_rate_history],
             }
             df = pd.DataFrame(data)
-            results = pd.concat([results, df], ignore_index=True)
+            if results.empty:
+                results = df
+            else:
+                results = pd.concat([results, df], ignore_index=True)
             start_time = funding_rate_history[-1]["timestamp"] + one_minutes  # Increment start time to avoid duplicates
         
         results.set_index("datetime", inplace=True)

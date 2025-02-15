@@ -5,7 +5,7 @@ import sys
 
 if __name__ == "__main__":
     # 개발 편의를 위해 인자 값이 전달되지 않은 경우엔 아래 하드코딩된 값을 사용한다.
-    strategy_name = "junggil_003"
+    strategy_name = "junggil_004"
     mode_str = "backtest"
 
     if len(sys.argv) == 3:
