@@ -182,6 +182,10 @@ class Base(ABC):
             return "BTC/USDT"
         elif symbol.lower() == "ethusdt":
             return "ETH/USDT"
+        elif symbol.lower() == "bnbusdt":
+            return "BNB/USDT"
+        elif symbol.lower() == "solusdt":
+            return "SOL/USDT"
         return symbol
 
     def __load_from_api_server(self, symbol, start, end):

@@ -284,7 +284,7 @@ class BacktestOrder(base.Base):
         self.total_value = self.usd + self.total_profit
 
     def __update_funding_rate(self, symbol, funding_rate, close_price):
-        self.funding_rate[symbol] = funding_rate
+        self.funding_rate[symbol] = round(funding_rate, 10)
 
         # 포지션이 있을 경우 변경되는 펀딩피 적용.
         if pos := self.pos[symbol]:
