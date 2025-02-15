@@ -166,10 +166,10 @@ class BacktestOrder(base.Base):
         sym_quantity = None
         if not order.quantity:
             balance = self.__get_balance_from_rate_base(order.rate_base)
-            order.quantity = (order.rate * balance) / (price * (1.0 + self.commission))
+            order.quantity = round((order.rate * balance) / (price * (1.0 + self.commission)), 10)
 
             symbol_balance = self.__get_balance_from_rate_base(order.rate_base, order.symbol)
-            sym_quantity = (order.rate * symbol_balance) / (price * (1.0 + self.commission))
+            sym_quantity = round((order.rate * symbol_balance) / (price * (1.0 + self.commission)), 10)
 
         order.open_price = price
         order.cost = price * order.quantity
@@ -234,9 +234,7 @@ class BacktestOrder(base.Base):
         if pos.quantity == order.quantity:
             self.pos[order.symbol] = None
         else:
-            pos.quantity -= order.quantity
-            if pos.quantity < 0.00000001:
-                pos.quantity = 0.0
+            pos.quantity = round(pos.quantity - order.quantity, 10)
             pos.cost -= order.cost
 
         # close할 포지션의 정보 기록

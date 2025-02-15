@@ -257,7 +257,7 @@ class Base(ABC):
                 data = chunk
             else:
                 data = pd.concat([data, chunk], ignore_index=True, copy=False)
-            start_timestamp = ohlcv[-1][0] + one_minutes  # 1분(60초) 단위 증가
+            start_timestamp = ohlcv[-1][0] + one_minutes
 
             readable_start_time = datetime.datetime.fromtimestamp(start_timestamp / 1000).strftime("%Y-%m-%d %H:%M:%S")
             readable_end_time = datetime.datetime.fromtimestamp(end_timestamp / 1000).strftime("%Y-%m-%d %H:%M:%S")
