@@ -14,9 +14,9 @@ if __name__ == "__main__":
 
     """
 
-    multi = Multi("harin_002")
-    multi.add_variable("symbols", [["ethusdt"], ["ethusdt", "xrpusdt"]])
-    multi.add_variable("trading_interval", [120, 240, 360])
-    multi.add_variable("diff_ratio", [1, 2])
-    multi.set_permutable_variables(["trading_interval"])
+    multi = Multi("skim_005")
+    multi.add_variable("symbols", [["btcusdt"]])
+    multi.add_variable("long_period", [3* 24 * 60, 4 * 24 * 60, 5 * 24 * 60])
+    multi.add_variable("short_period", [300, 400, 500])
+    multi.add_variable("stoch", [180, 360, 720])
     multi.run()
