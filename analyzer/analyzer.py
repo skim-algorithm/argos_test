@@ -15,6 +15,8 @@ class Analyzer:
         self.interval_in_day = self.__calculate_interval_in_day(args.interval)
         self.intervals_per_year = helper.calculate_number_of_intervals_per_year(args.interval)
         self.current_year = 0
+        self.month_period = 1
+        self.divide_year = 0
 
         # 전체 analyzers 들을 추가한다.
         self.analyzers = defaultdict(dict)
@@ -61,6 +63,10 @@ class Analyzer:
         self.logging.error(f"Invalid interval to calculate interval in day: {interval}")
         return 0.0
 
+    def __get_current_month(self, datas):
+        _, df = datas[0]
+        return df.iloc[-1].name.month
+
     def __get_current_year(self, datas):
         _, df = datas[0]
         return df.iloc[-1].name.year
@@ -68,14 +74,19 @@ class Analyzer:
     def __update_year_and_return_true_if_changed(self, datas):
         """현재 연도를 업데이트 하고 이전과 달라졌는지 확인한다."""
         prev_year = self.current_year
+        prev_divide_year = self.divide_year
         self.current_year = self.__get_current_year(datas)
-        return prev_year != self.current_year
+        self.divide_year = int((self.__get_current_month(datas) - 1) / self.month_period)
+        result = prev_year != self.current_year or prev_divide_year != self.divide_year
+        if result:
+            print (f"Year changed from {prev_year} to {self.current_year}, divide year from {prev_divide_year} to {self.divide_year}")
+        return result
 
     def on_data(self, datas):
         if self.__update_year_and_return_true_if_changed(datas):
             # 연도가 바뀌었으므로 해당 연도에 맞는 analyzers 새로 생성.
             for symbol in self.args.symbols:
-                self.analyzers[symbol][self.current_year] = self.__build_analyzers(symbol)
+                self.analyzers[symbol][self.current_year * 100 + self.divide_year] = self.__build_analyzers(symbol)
 
         # analyzer의 on_data는 일단위로 실행된다.
 
@@ -88,14 +99,14 @@ class Analyzer:
             for analyzer in self.analyzers[symbol]["total"].values():
                 analyzer.on_data(df)
 
-            for analyzer in self.analyzers[symbol][self.current_year].values():
+            for analyzer in self.analyzers[symbol][self.current_year * 100 + self.divide_year].values():
                 analyzer.on_data(df)
 
     def on_order_done(self, order):
         for analyzer in self.analyzers[order.symbol]["total"].values():
             analyzer.on_order_done(order)
 
-        for analyzer in self.analyzers[order.symbol][self.current_year].values():
+        for analyzer in self.analyzers[order.symbol][self.current_year * 100 + self.divide_year].values():
             analyzer.on_order_done(order)
 
     def finalize(self):

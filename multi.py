@@ -14,9 +14,8 @@ if __name__ == "__main__":
 
     """
 
-    multi = Multi("skim_005")
+    multi = Multi("junggil_003")
     multi.add_variable("symbols", [["btcusdt"]])
-    multi.add_variable("long_period", [3* 24 * 60, 4 * 24 * 60, 5 * 24 * 60])
-    multi.add_variable("short_period", [300, 400, 500])
-    multi.add_variable("stoch", [180, 360, 720])
+    multi.add_variable("band_period", [15, 12, 7])
+    multi.add_variable("recent_band_period", [7, 3, 2])
     multi.run()
