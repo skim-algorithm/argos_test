@@ -20,6 +20,7 @@ class StrategyData2(data.BacktestData):
     def __init__(self, strategy_name: str):
         args = arg.create_args(strategy_name, is_live=False)
         super().__init__(args)
+        self.result = None
 
     def get_data(self, symbol, start_time, end_time):
         self._load_history(symbol)
@@ -135,7 +136,28 @@ class Multi2:
 
     def get_strategy_data(self, symbol):
         data = StrategyData2(self.strategy_name)
+        print(f"Downloading data for {symbol} from {self.start_date} to {self.end_date}")
         data.get_data(symbol, self.start_date, self.end_date)
+
+    def get_best_sharpe_results(self):
+        if self.result is None:
+            return None
+        best_sharpe_results = {}
+        sharpe = -100
+        for item in self.result:
+            value = item[0]
+            result = item[1]
+            new_sharpe = result['ALL']['total']['Sharpe']
+            if len(result) == 0:
+                continue
+            if sharpe < new_sharpe:
+                sharpe = new_sharpe
+                best_sharpe_results = {
+                    "value": value,
+                    "sharpe": sharpe,
+                    "result": result,
+                }
+        return best_sharpe_results
 
     def get_all_data(self):
         all_syms = []
@@ -162,3 +184,4 @@ class Multi2:
 
         helper.save_multi_summary(self.strategy_name, results)
         print(f"Multi process took {time.time() - begin_ts} seconds.")
+        self.result = results
