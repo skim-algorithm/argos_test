@@ -4,15 +4,17 @@ import pandas as pd
 
 class SqlManager:
     def __init__(self):
-        # TODO: 날라가서 다시 짜야해
+        # TODO: 테스트 필요
+
         # SQLite 데이터베이스 파일명
         self.db_name = "argos_btc.db"
-        self.table_name = "argos_data"
+        
         # SQLite 연결 생성
         self.conn = sqlite3.connect(self.db_name)
         self.cursor = self.conn.cursor()
 
     def create_table(self, table_name):
+        self.table_name = table_name
         self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} (timestamp TEXT PRIMARY KEY, datetime TEXT, open REAL, high REAL, low REAL, close REAL, volume REAL)")
         self.conn.commit()
 
@@ -44,6 +46,6 @@ class SqlManager:
         self.conn.close()
 
 sqlmanager = SqlManager()
-sqlmanager.create_table("argos_db2")
+sqlmanager.create_table("argos_data")
 sqlmanager.insert_data_from_csv("sql_data")
 sqlmanager.close_db()
