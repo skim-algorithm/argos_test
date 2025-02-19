@@ -3,6 +3,7 @@ import datetime
 import os
 from collections import defaultdict
 import requests
+import sqlite3
 
 import ccxt
 import pandas as pd
@@ -91,7 +92,9 @@ class Base(ABC):
         if data is None:
             # 캐시된 데이터가 없을 경우 새로 받아와서 저장한다.
             try:
-                data = self.__load_from_api_server(symbol.lower(), start, end)
+                data = self.__load_from_sqllite(symbol.lower(), start, end)
+                if data is None:
+                    data = self.__load_from_api_server(symbol.lower(), start, end)
             except Exception:
                 import traceback
 
@@ -123,7 +126,7 @@ class Base(ABC):
         if ccxt_symbol not in markets:
             raise ValueError(f"Unsupported symbol: {ccxt_symbol}")
 
-    
+
         # Fetch funding rates
         start_time = start
         end_time = end
@@ -151,7 +154,7 @@ class Base(ABC):
             else:
                 results = pd.concat([results, df], ignore_index=True)
             start_time = funding_rate_history[-1]["timestamp"] + one_minutes  # Increment start time to avoid duplicates
-        
+
         results.set_index("datetime", inplace=True)
         self.logging.info(f"({symbol}) funding rate history loaded from {start} to {end}")
         return results
@@ -190,6 +193,27 @@ class Base(ABC):
         elif symbol.lower() == "solusdt":
             return "SOL/USDT"
         return symbol
+
+    def __load_from_sqllite(self, symbol, start, end):
+        db_name = None
+        if symbol == "btcusdt":
+            db_name = "argos_btc.db"
+        if db_name is None:
+            return None
+        table_name = "argos_data"
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        if cursor is None:
+            return None
+
+        start_date = pd.to_datetime(start).strftime('%Y/%m/%d %H:%M')
+        end_date = pd.to_datetime(end).strftime('%Y/%m/%d %H:%M')
+
+        query = f"SELECT * FROM {table_name} WHERE datetime BETWEEN ? AND ? ORDER BY timestamp ASC"
+        df = pd.read_sql_query(query, conn, params=(start_date, end_date))
+        df.to_csv(self.__get_cache_dir(symbol, start, end), index=False)
+        conn.close()
+        return df
 
     def __load_from_api_server(self, symbol, start, end):
         ccxt_symbol = self.__get_symbol(symbol)

@@ -6,6 +6,7 @@ import sys
 import traceback
 import datetime
 from pathlib import Path
+import os
 
 from mode import backtest
 from common import log
@@ -143,7 +144,7 @@ class Multi2:
         if self.result is None:
             return None
         best_sharpe_results = {}
-        sharpe = -100
+        sharpe = -sys.maxsize - 1
         for item in self.result:
             value = item[0]
             result = item[1]
