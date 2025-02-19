@@ -206,8 +206,8 @@ class Base(ABC):
         if cursor is None:
             return None
 
-        start_date = pd.to_datetime(start).strftime('%Y/%m/%d %H:%M')
-        end_date = pd.to_datetime(end).strftime('%Y/%m/%d %H:%M')
+        start_date = pd.to_datetime(start).strftime('%Y-%m-%d')
+        end_date = pd.to_datetime(end).strftime('%Y-%m-%d')
 
         query = f"SELECT * FROM {table_name} WHERE datetime BETWEEN ? AND ? ORDER BY timestamp ASC"
         df = pd.read_sql_query(query, conn, params=(start_date, end_date))

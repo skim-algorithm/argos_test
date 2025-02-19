@@ -15,7 +15,7 @@ class Analyzer:
         self.interval_in_day = self.__calculate_interval_in_day(args.interval)
         self.intervals_per_year = helper.calculate_number_of_intervals_per_year(args.interval)
         self.current_year = 0
-        self.month_period = 1
+        self.month_period = 12
         self.divide_year = 0
 
         # 전체 analyzers 들을 추가한다.

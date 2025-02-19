@@ -15,7 +15,6 @@ from common import arg
 from data import backtest as data
 from datetime import datetime
 
-
 # Retreive data for a symbol of strategy
 class StrategyData2(data.BacktestData):
     def __init__(self, strategy_name: str):
@@ -148,6 +147,8 @@ class Multi2:
         for item in self.result:
             value = item[0]
             result = item[1]
+            if len(result) == 0:
+                return None
             new_sharpe = result['ALL']['total']['Sharpe']
             if len(result) == 0:
                 continue
