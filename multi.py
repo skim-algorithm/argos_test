@@ -14,8 +14,9 @@ if __name__ == "__main__":
 
     """
 
-    multi = Multi("junggil_003")
+    multi = Multi("junggil_003_2")
     multi.add_variable("symbols", [["btcusdt"]])
-    multi.add_variable("band_period", [15, 12, 7])
-    multi.add_variable("recent_band_period", [7, 3, 2])
+    multi.add_variable("max_loss", [0.025, 0.01])
+    multi.add_variable("band_period", [12, 7])
+    multi.add_variable("recent_band_period", [7, 3])
     multi.run()
