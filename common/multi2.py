@@ -26,7 +26,6 @@ class StrategyData2(data.BacktestData):
         self._load_history(symbol)
         self._get_data(symbol, start_time, end_time)
 
-
 class Multi2:
     def __init__(self, strategy_name, start_date, end_date):
         self.strategy_name = str(strategy_name)
@@ -143,7 +142,7 @@ class Multi2:
         if self.result is None:
             return None
         best_sharpe_results = {}
-        sharpe = -sys.maxsize - 1
+        sharpe = -sys.maxsize - 1 # 0
         for item in self.result:
             value = item[0]
             result = item[1]
