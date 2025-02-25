@@ -7,7 +7,7 @@ class SqlManager:
         # TODO: 테스트 필요
 
         # SQLite 데이터베이스 파일명
-        self.db_name = "argos_btc.db"
+        self.db_name = "argos_eth.db"
         
         # SQLite 연결 생성
         self.conn = sqlite3.connect(self.db_name)
@@ -47,5 +47,5 @@ class SqlManager:
 
 sqlmanager = SqlManager()
 sqlmanager.create_table("argos_data")
-sqlmanager.insert_data_from_csv("sql_data")
+sqlmanager.insert_data_from_csv("../sql_data")
 sqlmanager.close_db()

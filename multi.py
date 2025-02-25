@@ -14,9 +14,10 @@ if __name__ == "__main__":
 
     """
 
-    multi = Multi("junggil_003_2")
-    multi.add_variable("symbols", [["btcusdt"]])
-    multi.add_variable("max_loss", [0.025, 0.01])
-    multi.add_variable("band_period", [12, 7])
-    multi.add_variable("recent_band_period", [7, 3])
+    multi = Multi("skim_005_2")
+    multi.add_variable("symbols", [["btcusdt", "ethusdt"]])
+    multi.add_variable("long_period_mapping", [12 * 24 * 60, 7 * 24 * 60])
+    multi.add_variable("short_period_mapping", [300, 3 * 24 * 60])
+    multi.add_variable("stoch_mapping", [100, 300, 500])
+    multi.add_variable("ti_interval", [10, 20])
     multi.run()

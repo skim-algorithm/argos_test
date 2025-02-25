@@ -198,6 +198,8 @@ class Base(ABC):
         db_name = None
         if symbol == "btcusdt":
             db_name = "argos_btc.db"
+        elif symbol == "ethusdt":
+            db_name = "argos_eth.db"
         if db_name is None:
             return None
         table_name = "argos_data"
