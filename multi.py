@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
     multi = Multi("skim_005_2")
     multi.add_variable("symbols", [["btcusdt", "ethusdt"]])
-    multi.add_variable("long_period_mapping", [12 * 24 * 60, 7 * 24 * 60])
-    multi.add_variable("short_period_mapping", [300, 3 * 24 * 60])
-    multi.add_variable("stoch_mapping", [100, 300, 500])
-    multi.add_variable("ti_interval", [10, 20])
+    multi.add_variable("long_period_mapping", [7 * 24 * 60, 12 * 24 * 60, 15 * 24 * 60])
+    multi.add_variable("short_period_mapping", [100, 150])
+    multi.add_variable("stoch_mapping", [100, 150])
+    multi.add_variable("profit_cut", [0.01, 0.02])
     multi.run()
