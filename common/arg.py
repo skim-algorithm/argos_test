@@ -59,7 +59,9 @@ def __get_live_json(strategy_name: str):
 
 def create_args(strategy_name, is_live) -> Args:
     if is_live:
-        data = __get_live_json(strategy_name)
+        # TODO sungmkim to get from live json
+        #data = __get_live_json(strategy_name)
+        data = __get_json(strategy_name)
     else:
         data = __get_json(strategy_name)
 
@@ -78,6 +80,10 @@ def create_args(strategy_name, is_live) -> Args:
 
     if "exchange_alias" in data:
         args.ex_alias = data["exchange_alias"]
+
+    #TODO sungmkim - CCXT or Argos_Order
+    args.ex_alias = "sungmkim"
+    args.author = "sungmkim"
 
     if is_live and not args.ex_alias:
         raise ValueError("ex_alias is missing in live mode")

@@ -30,6 +30,7 @@ class CandlestickWebsocketData(threading.Thread):
         self._keepalive_interval = 60  # interval 1-min
 
     def run(self):
+        # TODO sungmkim - get from api_key.json
         self.client = client.Client("api_key", "api_secret")
         self.__start_socket()
 
@@ -223,7 +224,9 @@ class LiveData(base.Base):
             # 이 분봉에 대한 동작은 이미 완료하였으므로 callback을 건너뛴다
             return
 
-        self.datas[symbol] = self.datas[symbol].append(series)
+        #self.datas[symbol] = self.datas[symbol].append(series)
+        self.datas[symbol] = pd.concat([self.datas[symbol], series.to_frame().T])
+
         # self.logging.info(series.name)
         self.__clear_old_df(symbol)
 
@@ -306,6 +309,7 @@ class LiveData(base.Base):
             df.drop(df.index[:drop_length], inplace=True)
 
     def __get_history_from_exchange(self, symbol, start, end, limit):
+        # TODO sungmkim - get from api_key.json
         self.client = client.Client("api_key", "api_secret")
         kline_history = None
         if self.args.ex_class == "futures":
