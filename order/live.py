@@ -44,63 +44,59 @@ class LiveOrder(base.Base):
         self.account_info = {}
 
     def _send_order_to_exchange(self, order: o.Order) -> int | list[int]:
-        return None
-        # TODO sungmkim - CCXT or Argos_Order
-        # order_config = config.order()
-        # url = f'http://{order_config["Url"]}:{order_config["Port"]}/order'
-        #
-        # res = requests.post(url, json=order.to_json())
-        # data = res.json()
-        # self.logging.info(f"_send_order_to_exchange: order={order.to_json()}, res={data}")
-        #
-        # if res.status_code != 200:
-        #     return None
-        #
-        # if data is None:
-        #     return None
-        #
-        # def get_order_id_list(_data):
-        #     if isinstance(_data, list):
-        #         return [x for l in (map(lambda x: get_order_id_list(x), _data)) for x in l]  # noqa: E741
-        #     return [_data.get("orderId")]
-        #
-        # orderIdList = get_order_id_list(data)
-        # self.logging.info(f"_send_order_to_exchange: orderIds={orderIdList}")
-        #
-        # if len(orderIdList) == 1:
-        #     return orderIdList[0]
-        # elif len(orderIdList) > 1:
-        #     return orderIdList
-        # else:
-        #     return None
+        order_config = config.order()
+        url = f'http://{order_config["Url"]}:{order_config["Port"]}/order'
+
+        res = requests.post(url, json=order.to_json())
+        data = res.json()
+        self.logging.info(f"_send_order_to_exchange: order={order.to_json()}, res={data}")
+
+        if res.status_code != 200:
+            return None
+
+        if data is None:
+            return None
+
+        def get_order_id_list(_data):
+            if isinstance(_data, list):
+                return [x for l in (map(lambda x: get_order_id_list(x), _data)) for x in l]  # noqa: E741
+            return [_data.get("orderId")]
+
+        orderIdList = get_order_id_list(data)
+        self.logging.info(f"_send_order_to_exchange: orderIds={orderIdList}")
+
+        if len(orderIdList) == 1:
+            return orderIdList[0]
+        elif len(orderIdList) > 1:
+            return orderIdList
+        else:
+            return None
 
     def _send_cancel_to_exchange(self, cancel: o.Cancel) -> bool:
-        return False
-        # TODO sungmkim - CCXT or Argos_Order
-        # order_config = config.order()
-        # url = f'http://{order_config["Url"]}:{order_config["Port"]}/cancel'
-        #
-        # res = requests.post(url, json=cancel.to_json())
-        # data = res.json()
-        # self.logging.info(f"_send_cancel_to_exchange: cancel={cancel.to_json()}, res={data}")
-        #
-        # if res.status_code != 200:
-        #     return False
-        #
-        # if data is None:
-        #     return True
-        #
-        # def get_order_id_list(_data):
-        #     if isinstance(_data, list):
-        #         return [x for l in (map(lambda x: get_order_id_list(x), _data)) for x in l]  # noqa: E741
-        #     return [_data.get("orderId")]
-        #
-        # orderIdList = get_order_id_list(data)
-        # self.logging.info(f"_send_cancel_to_exchange: orderIds={orderIdList}")
-        #
-        # self.logging.info(f"self.cancel_cnts[cancel.symbol]: {self.cancel_cnts[cancel.symbol]} + {len(orderIdList)}")
-        # self.cancel_cnts[cancel.symbol] += len(orderIdList)
-        # return True
+        order_config = config.order()
+        url = f'http://{order_config["Url"]}:{order_config["Port"]}/cancel'
+
+        res = requests.post(url, json=cancel.to_json())
+        data = res.json()
+        self.logging.info(f"_send_cancel_to_exchange: cancel={cancel.to_json()}, res={data}")
+
+        if res.status_code != 200:
+            return False
+
+        if data is None:
+            return True
+
+        def get_order_id_list(_data):
+            if isinstance(_data, list):
+                return [x for l in (map(lambda x: get_order_id_list(x), _data)) for x in l]  # noqa: E741
+            return [_data.get("orderId")]
+
+        orderIdList = get_order_id_list(data)
+        self.logging.info(f"_send_cancel_to_exchange: orderIds={orderIdList}")
+
+        self.logging.info(f"self.cancel_cnts[cancel.symbol]: {self.cancel_cnts[cancel.symbol]} + {len(orderIdList)}")
+        self.cancel_cnts[cancel.symbol] += len(orderIdList)
+        return True
         
     def __process_open_order_done(self, order: o.Order, msg):
         price = msg.get('AveragePrice')
@@ -282,48 +278,57 @@ class LiveOrder(base.Base):
             # 호환성을 위해, 또 critical한 설정이 아니므로 로그만 남긴다
             self.logging.info(f"Could not set author: err={res.json()}")
 
+    def __get_account(self):
+        req = self.__create_req_common()
+        url = f"{self.__get_order_url()}/account"
+
+        res = requests.get(url, json=req)
+        if res.status_code != 200:
+            self.logging.error(f"Failed to get account info: err={res.json()}")
+            return
+        data = res.json()
+        return data
+
     def __load_positions(self):
-        return
-        # TODO sungmkim - CCXT or Argos_Order
-        # req = self.__create_req_common()
-        # url = f"{self.__get_order_url()}/positions"
-        #
-        # res = requests.get(url, json=req)
-        # if res.status_code != 200:
-        #     raise Exception(f"Failed to load positions: err={res.json()}")
-        #
-        # positions = res.json()
-        # if not positions:
-        #     return
-        #
-        # for pos in positions:
-        #     # 거래소의 position_size는 부호가 포함되어있다.
-        #     position_size = float(pos["pa"])
-        #
-        #     order = o.Order(
-        #         ex_alias=self.args.ex_alias,
-        #         strategy_name=self.args.nickname,
-        #         symbol=pos["s"],
-        #         opt=enum.OrderOpt.OPEN,
-        #         quantity=abs(position_size),
-        #         price=float(pos["ep"]),
-        #     )
-        #
-        #     if position_size > 0.0:
-        #         order.side = enum.OrderSide.BUY
-        #     elif position_size < 0.0:
-        #         order.side = enum.OrderSide.SELL
-        #     else:
-        #         self.logging.warning(f"Invalid position size: pos={pos}")
-        #         continue
-        #
-        #     self.logging.info(f"Position loaded: order={order.to_json()}")
-        #
-        #     # TODO: 현재는 symbol별 포지션이 하나만 존재할 수 있다.
-        #     if self.pos[order.symbol]:
-        #         raise Exception(f"Position already exist: " f"pos={self.pos[order.symbol]}, order={order}")
-        #
-        #     self.pos[order.symbol] = order
+        req = self.__create_req_common()
+        url = f"{self.__get_order_url()}/positions"
+
+        res = requests.get(url, json=req)
+        if res.status_code != 200:
+            raise Exception(f"Failed to load positions: err={res.json()}")
+
+        positions = res.json()
+        if not positions:
+            return
+
+        for pos in positions:
+            # 거래소의 position_size는 부호가 포함되어있다.
+            position_size = float(pos["pa"])
+
+            order = o.Order(
+                ex_alias=self.args.ex_alias,
+                strategy_name=self.args.nickname,
+                symbol=pos["s"],
+                opt=enum.OrderOpt.OPEN,
+                quantity=abs(position_size),
+                price=float(pos["ep"]),
+            )
+
+            if position_size > 0.0:
+                order.side = enum.OrderSide.BUY
+            elif position_size < 0.0:
+                order.side = enum.OrderSide.SELL
+            else:
+                self.logging.warning(f"Invalid position size: pos={pos}")
+                continue
+
+            self.logging.info(f"Position loaded: order={order.to_json()}")
+
+            # TODO: 현재는 symbol별 포지션이 하나만 존재할 수 있다.
+            if self.pos[order.symbol]:
+                raise Exception(f"Position already exist: " f"pos={self.pos[order.symbol]}, order={order}")
+
+            self.pos[order.symbol] = order
 
     def __load_open_orders(self):
         req = self.__create_req_common()
@@ -394,11 +399,11 @@ class LiveOrder(base.Base):
         )
         subscribe.start()
 
-        # TODO sungmkim - CCXT vs Argos_Order
-        #self.__update_author()
-        #self.__load_positions()
-        #self.__load_open_orders()
-        #self.__send_leverage_to_exchange()
+        self.__get_account()
+        self.__update_author()
+        self.__load_positions()
+        self.__load_open_orders()
+        self.__send_leverage_to_exchange()
 
     def on_data(self, datas):
         self.last_data = datas

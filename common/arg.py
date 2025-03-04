@@ -82,8 +82,8 @@ def create_args(strategy_name, is_live) -> Args:
         args.ex_alias = data["exchange_alias"]
 
     #TODO sungmkim - CCXT or Argos_Order
-    args.ex_alias = "sungmkim"
-    args.author = "sungmkim"
+    args.ex_alias = "sungmkim1980"
+    args.author = "sungmkim1980"
 
     if is_live and not args.ex_alias:
         raise ValueError("ex_alias is missing in live mode")
