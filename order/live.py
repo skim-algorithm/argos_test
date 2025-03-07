@@ -409,26 +409,24 @@ class LiveOrder(base.Base):
         self.last_data = datas
 
     def get_funding_rate(self, symbol) -> float:
-        return None
-        # TODO sungmkim - CCXT or Argos_Order
-        # now_ts = helper.now_ts()
-        # next_ts = self.funding_rate_next_ts[symbol]
-        #
-        # if now_ts >= next_ts:
-        #     # funding rate 갱신 시간이 지났으므로 새로운 funding rate를 요청한다.
-        #     req = self.__create_req_common()
-        #     req["symbol"] = symbol
-        #     url = f"{self.__get_order_url()}/funding_rate"
-        #
-        #     res = requests.get(url, json=req)
-        #     if res.status_code != 200:
-        #         self.logging.error(f"Failed to get funding rate: err={res.json()}")
-        #     else:
-        #         data = res.json()
-        #         self.funding_rate_next_ts[symbol] = data["nextFundingTime"]
-        #         self.funding_rate[symbol] = float(data["lastFundingRate"])
-        #
-        # return self.funding_rate[symbol]
+        now_ts = helper.now_ts()
+        next_ts = self.funding_rate_next_ts[symbol]
+
+        if now_ts >= next_ts:
+            # funding rate 갱신 시간이 지났으므로 새로운 funding rate를 요청한다.
+            req = self.__create_req_common()
+            req["symbol"] = symbol
+            url = f"{self.__get_order_url()}/funding_rate"
+
+            res = requests.get(url, json=req)
+            if res.status_code != 200:
+                self.logging.error(f"Failed to get funding rate: err={res.json()}")
+            else:
+                data = res.json()
+                self.funding_rate_next_ts[symbol] = data["nextFundingTime"]
+                self.funding_rate[symbol] = float(data["lastFundingRate"])
+
+        return self.funding_rate[symbol]
 
     def get_balance(self):
         from typing import Final
