@@ -93,7 +93,8 @@ class Base(ABC):
             # 캐시된 데이터가 없을 경우 새로 받아와서 저장한다.
             try:
                 data = self.__load_from_sqllite(symbol.lower(), start, end)
-                if data is None:
+                
+                if data is None or len(data) == 0:
                     data = self.__load_from_api_server(symbol.lower(), start, end)
             except Exception:
                 import traceback

@@ -203,11 +203,18 @@ class LiveData(base.Base):
             msg = f"[{self.args.strategy}][{symbol}] data missing. expected={expected}, received={series.name}"
             self.logging.info(msg)
             helper.send_slack(msg)
-            missing_df = self.__get_history_from_exchange(symbol, expected, series.name, 10)
+            if isinstance(expected, pd.Timestamp):
+                int_expected = int(expected.timestamp() * 1000)
+            if isinstance(series.name, datetime.datetime):
+                int_series_name = int(series.name.timestamp() * 1000)
+
+            missing_df = self.__get_history_from_exchange(symbol, int_expected, int_series_name, 10)
             df = missing_df.loc[expected, :]
             if not df.empty:
                 self.logging.info(f"[{symbol}] new data={df.name}")
-                self.datas[symbol] = self.datas[symbol].append(df)
+                # self.datas[symbol] = self.datas[symbol].append(df)
+                self.datas[symbol] = pd.concat([self.datas[symbol], df.to_frame().T])
+
                 expected = self.datas[symbol].iloc[-1].name + datetime.timedelta(
                     seconds=helper.interval_in_seconds(self.args.interval)
                 )

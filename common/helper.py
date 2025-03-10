@@ -88,30 +88,30 @@ def variable_to_filename(variable):
 enable_slack = False
 
 def send_slack(message: str, mention: str = None):
-    if not enable_slack:
-        return
-
-    cfg = config.slack()
-
-    headers = {"content-type": "application/json"}
-
-    params = {}
-    params["channel"] = cfg["Channel"]
-    params["text"] = message
-    if mention:
-        params["mention"] = "author_" + mention
-
-    r = requests.post(cfg["Url"], headers=headers, data=json.dumps(params))
-    if r.status_code != 200:
-        log.makeLogger("slack_noti").error(f"Failed to send slack. status={r.status_code} message={message}")
-
+    pass
+    # if not enable_slack:
+    #     return
+    #
+    # cfg = config.slack()
+    #
+    # headers = {"content-type": "application/json"}
+    #
+    # params = {}
+    # params["channel"] = cfg["Channel"]
+    # params["text"] = message
+    # if mention:
+    #     params["mention"] = "author_" + mention
+    #
+    # r = requests.post(cfg["Url"], headers=headers, data=json.dumps(params))
+    # if r.status_code != 200:
+    #     log.makeLogger("slack_noti").error(f"Failed to send slack. status={r.status_code} message={message}")
 
 def save_multi_summary(strategy_name, results):
 
     error_results = pd.DataFrame()
     for i in results:
         if i[1] == {}:
-            error_results = error_results.append({"error_variables": i[0]}, ignore_index=True)
+            error_results = pd.concat([error_results, pd.DataFrame([{"error_variables": i[0]}])], ignore_index=True)
 
     combined_by_symbol = [pd.concat([s.T for t, s in m.items() if t != "ALL"], axis=0) for _, m in results if m.items()]
 

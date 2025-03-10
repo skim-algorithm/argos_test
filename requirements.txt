@@ -2,21 +2,20 @@
 autobahn
 certifi
 cryptography
+ccxt
 dateparser
+ujson
+python-binance==0.7.10
 
-# GCP 사용을 위한 모듈 설치
-google-api-python-client
-matplotlib
-
-numpy==1.22.*
-pandas==1.3.*
+numpy
+pandas
 psycopg2-binary
 pyarrow
 pyOpenSSL
 redis
 requests
 service-identity
-sklearn
+scikit-learn
 statsmodels
 Twisted
 xlsxwriter

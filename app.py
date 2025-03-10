@@ -8,11 +8,11 @@ from mode import live
 try:
     strategy_name = os.environ["strategy"]
 except Exception:
-    strategy_name = "junggil_003"
+    strategy_name = "skim_001"
 try:
     mode_str = os.environ["mode"]
 except Exception:
-    mode_str = "backtest"
+    mode_str = "live"
 
 
 if mode_str == "backtest":
