@@ -23,11 +23,13 @@ class StrategyData2(data.BacktestData):
         self.result = None
 
     def get_data(self, symbol, start_time, end_time):
-        self._load_history(symbol)
         self._get_data(symbol, start_time, end_time)
 
 class Multi2:
     def __init__(self, strategy_name, start_date, end_date):
+        self.start_date = start_date
+        self.end_date = end_date
+
         self.strategy_name = str(strategy_name)
         self.variables = list(list())
         self.variables_to_test = list()
@@ -39,8 +41,6 @@ class Multi2:
             start_date = args.backtest.start_time
         if end_date is None:
             end_date = args.backtest.end_time
-        self.start_date = start_date
-        self.end_date = end_date
 
         # 파라미터 최적화를 실행하는 동안 불필요한 로그 출력을 제한한다.
         log.min_log_level = logging.WARNING
