@@ -47,5 +47,5 @@ class SqlManager:
 
 sqlmanager = SqlManager()
 sqlmanager.create_table("argos_data")
-sqlmanager.insert_data_from_csv("../sql_data")
+sqlmanager.insert_data_from_csv("../sql_data/eth")
 sqlmanager.close_db()

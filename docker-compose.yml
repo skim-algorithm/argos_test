@@ -10,5 +10,18 @@ services:
       - ./:/app
       - ./log/argos/:/log
     ports:
-      - 6379:5432
+      - 9001:9000
+    command: python /app/app.py
+
+  skim_004:
+    image: arques/argos:latest
+    container_name: "argos-skim_004"
+    environment:
+      - strategy=skim_004
+      - mode=live
+    volumes:
+      - ./:/app
+      - ./log/argos/:/log
+    ports:
+      - 9002:9000
     command: python /app/app.py
